@@ -1,9 +1,8 @@
 const express = require("express");
-const app = express();
 const path = require("path");
 
-app.use(express.static(path.join(__dirname, "public"))); // Para processar JSON no body
-
+const app = express();
+app.use(express.json()); // Para processar JSON no body
 
 // Base de perguntas e respostas
 const faq = {
@@ -13,13 +12,15 @@ const faq = {
   "adeus": "Até mais! Volte sempre."
 };
 
-// Rota principal para testes
-app.get("/chatbot", (req, res) => {
-  res.send("Use o método POST para enviar perguntas ao chatbot.");
-  // res.sendFile(path.join(__dirname, "public", "index.html"));
+// Servir arquivos estáticos da pasta "public"
+app.use(express.static(path.join(__dirname, "public")));
+
+// Rota principal para exibir o HTML
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Rota do chatbot
+// Rota POST para o chatbot
 app.post("/chatbot", (req, res) => {
   const { message } = req.body; // Extrai a mensagem do body da requisição
   if (!message) {
@@ -31,8 +32,8 @@ app.post("/chatbot", (req, res) => {
   res.json({ reply: response });
 });
 
-// Servidor rodando
-const PORT = 5000;
+// Inicializa o servidor na porta 5000
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
