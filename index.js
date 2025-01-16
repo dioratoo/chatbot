@@ -15,7 +15,8 @@ const faq = {
 
 // Rota principal para testes
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.send("Use o método POST para enviar perguntas ao chatbot.");
+  // res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Rota do chatbot
