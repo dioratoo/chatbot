@@ -30,19 +30,21 @@ app.post("/chatbot", async (req, res) => {
       [translatedMessage.toLowerCase()],
       async (err, row) => {
         if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Erro no servidor." });
+          console.error("Erro ao acessar o banco de dados:", err);
+          return res.status(500).json({ reply: "Erro interno no servidor." });
         }
 
         if (row) {
           // Traduzir a resposta de volta para o idioma do usuário
           const translatedAnswer = await translate(row.answer, { to: detectedLanguage });
-          res.json({ reply: translatedAnswer.text });
+          res.json({ reply: row.answer });
         } else {
           res.json({ reply: "Lo siento, no entendí tu pregunta." });
         }
       }
     );
+    console.log("Pergunta recebida:", message.toLowerCase());
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao processar a tradução." });
