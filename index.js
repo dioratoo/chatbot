@@ -1,18 +1,20 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
+const fs = require("fs");
 
-const app = express(); // Certifique-se de que o Express está sendo inicializado
+const app = express();
 app.use(express.json()); // Processar JSON no corpo da requisição
 
-// Conectar ao banco de dados SQLite
-const db = new sqlite3.Database("./faq.db", sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    console.error("Erro ao conectar ao banco de dados:", err.message);
-  } else {
-    console.log("Conectado ao banco de dados SQLite.");
-  }
-});
+// Carregar perguntas e respostas do JSON
+let faq;
+try {
+  const data = fs.readFileSync(path.join(__dirname, "faq.json"), "utf8");
+  faq = JSON.parse(data);
+  console.log("Arquivo FAQ carregado com sucesso!");
+} catch (error) {
+  console.error("Erro ao carregar o arquivo FAQ:", error.message);
+  faq = {};
+}
 
 // Servir arquivos estáticos da pasta "public"
 app.use(express.static(path.join(__dirname, "public")));
@@ -24,32 +26,14 @@ app.get("/", (req, res) => {
 
 // Rota POST para o chatbot
 app.post("/chatbot", (req, res) => {
-  const { message } = req.body;
+  const { message } = req.body; // Extrai a mensagem do corpo da requisição
   if (!message) {
     return res.status(400).json({ error: "Por favor, envie uma mensagem." });
   }
 
-  const userQuestion = message.toLowerCase();
-  console.log("Pergunta recebida:", userQuestion);
-
-  db.get(
-    "SELECT answer FROM faq WHERE question = ? COLLATE NOCASE",
-    [userQuestion],
-    (err, row) => {
-      if (err) {
-        console.error("Erro ao acessar o banco de dados:", err.message);
-        return res.status(500).json({ reply: "Erro interno do servidor." });
-      }
-
-      if (row) {
-        console.log("Resposta encontrada:", row.answer);
-        res.json({ reply: row.answer });
-      } else {
-        console.log("Nenhuma resposta encontrada para:", userQuestion);
-        res.json({ reply: "Desculpe, não entendi sua pergunta. Tente algo diferente." });
-      }
-    }
-  );
+  // Procurar resposta no JSON
+  const response = faq[message.toLowerCase()] || "Lo siento, no entendí tu pregunta. Intenta algo diferente.";
+  res.json({ reply: response });
 });
 
 // Inicializa o servidor na porta 5000
