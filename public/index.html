@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,118 +8,70 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f9;
+      color: #333;
       margin: 0;
       padding: 0;
     }
     .chat-container {
-      max-width: 800px;
+      max-width: 600px;
       margin: 50px auto;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      border: 1px solid #d1d1d1;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    .header {
-      background-color: #0072c6;
-      color: #ffffff;
-      text-align: center;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .messages {
-      padding: 15px;
+    #chat-box {
       height: 300px;
       overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
       background-color: #f9f9f9;
     }
     .message {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
-    .message.user {
+    .user {
       text-align: right;
-      color: #0072c6;
+      color: #007bff;
     }
-    .message.bot {
+    .chatbot {
       text-align: left;
-      color: #5a5a5a;
+      color: #28a745;
     }
-    .footer {
+    #chat-form {
       display: flex;
-      padding: 10px;
-      border-top: 1px solid #d1d1d1;
+      margin-top: 10px;
     }
-    .footer input {
+    #user-input {
       flex: 1;
       padding: 10px;
-      font-size: 16px;
-      border: 1px solid #d1d1d1;
-      border-radius: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
-    .footer button {
-      margin-left: 10px;
-      background-color: #0072c6;
-      color: #ffffff;
-      border: none;
+    button {
       padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
       cursor: pointer;
     }
-    .footer button:hover {
-      background-color: #005a99;
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <div class="chat-container">
-    <div class="header">Chatbot Protheus</div>
-    <div class="messages" id="messages"></div>
-    <div class="footer">
-      <input type="text" id="messageInput" placeholder="Digite sua mensagem..." onkeypress="handleKeyPress(event)">
-      <button onclick="sendMessage()">Enviar</button>
-    </div>
+    <h1>Chatbot Protheus</h1>
+    <div id="chat-box"></div>
+    <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Escribe tu pregunta..." />
+      <button type="submit">Enviar</button>
+    </form>
   </div>
-
-  <script>
-    const messagesDiv = document.getElementById("messages");
-
-    function addMessage(content, sender) {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${sender}`;
-      messageDiv.textContent = content;
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const userMessage = input.value;
-      if (!userMessage.trim()) return;
-
-      addMessage(userMessage, "user");
-      input.value = "";
-
-      try {
-        const response = await fetch("/chatbot", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMessage })
-        });
-
-        const data = await response.json();
-        addMessage(data.reply, "bot");
-      } catch (error) {
-        addMessage("Erro ao se comunicar com o servidor.", "bot");
-      }
-    }
-
-    function handleKeyPress(event) {
-      if (event.key === "Enter") {
-        sendMessage();
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

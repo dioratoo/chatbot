@@ -1,20 +1,16 @@
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
 
 const app = express();
 app.use(express.json()); // Processar JSON no corpo da requisição
 
-// Carregar perguntas e respostas do JSON
-let faq;
-try {
-  const data = fs.readFileSync(path.join(__dirname, "faq.json"), "utf8");
-  faq = JSON.parse(data);
-  console.log("Arquivo FAQ carregado com sucesso!");
-} catch (error) {
-  console.error("Erro ao carregar o arquivo FAQ:", error.message);
-  faq = {};
-}
+// Banco de perguntas e respostas diretamente no código
+const faq = {
+  "hola": "¡Hola! ¿En qué puedo ayudarte?",
+  "¿cómo estás?": "¡Estoy bien, gracias por preguntar! ¿Y tú?",
+  "¿qué es protheus?": "Protheus es un sistema ERP desarrollado por TOTVS para gestionar empresas.",
+  "adiós": "¡Hasta luego! ¡Vuelve pronto!"
+};
 
 // Servir arquivos estáticos da pasta "public"
 app.use(express.static(path.join(__dirname, "public")));
@@ -26,13 +22,15 @@ app.get("/", (req, res) => {
 
 // Rota POST para o chatbot
 app.post("/chatbot", (req, res) => {
-  const { message } = req.body;
-  console.log("Mensagem recebida:", message); // Log da mensagem recebida
+  const { message } = req.body; // Extrai a mensagem do corpo da requisição
+  if (!message) {
+    return res.status(400).json({ error: "Por favor, envíe un mensaje." });
+  }
+
+  // Responder dinamicamente
   const response = faq[message.toLowerCase()] || "Lo siento, no entendí tu pregunta. Intenta algo diferente.";
-  console.log("Resposta enviada:", response); // Log da resposta enviada
   res.json({ reply: response });
 });
-
 
 // Inicializa o servidor na porta 5000
 const PORT = process.env.PORT || 5000;
