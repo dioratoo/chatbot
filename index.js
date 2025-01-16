@@ -1,35 +1,37 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 5000; // Usando a porta 5000 ou a porta configurada no Heroku
+const path = require("path");
 
-// Middleware para poder ler JSON no corpo das requisições
-app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); // Para processar JSON no body
 
-// Rota GET para verificar se o servidor está funcionando
+
+// Base de perguntas e respostas
+const faq = {
+  "oi": "Olá! Como posso ajudar?",
+  "qual é o seu nome?": "Eu sou um chatbot criado para te ajudar!",
+  "como faço para criar um chatbot?": "Você pode usar Node.js, Express e um serviço como Render para começar.",
+  "adeus": "Até mais! Volte sempre."
+};
+
+// Rota principal para testes
 app.get("/", (req, res) => {
-  res.send("Servidor funcionando corretamente!");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Rota POST para o chatbot
+// Rota do chatbot
 app.post("/chatbot", (req, res) => {
-  const { message } = req.body;  // Recebe a mensagem enviada pelo cliente
-  console.log("Mensagem recebida:", message);  // Log da mensagem para depuração
-
-  let response;
-
-  // Respostas simples baseadas no conteúdo da mensagem
-  if (message && message.toLowerCase().includes("oi")) {
-    response = "Olá! Como posso ajudar você?";
-  } else if (message && message.toLowerCase().includes("tchau")) {
-    response = "Até logo! Foi um prazer falar com você.";
-  } else {
-    response = "Desculpe, não entendi sua mensagem.";
+  const { message } = req.body; // Extrai a mensagem do body da requisição
+  if (!message) {
+    return res.status(400).json({ error: "Por favor, envie uma mensagem." });
   }
 
-  res.json({ response }); // Envia a resposta de volta para o cliente
+  // Responder dinamicamente
+  const response = faq[message.toLowerCase()] || "Desculpe, não entendi sua pergunta.";
+  res.json({ reply: response });
 });
 
-// Iniciar o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+// Servidor rodando
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

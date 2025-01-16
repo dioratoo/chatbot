@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+</head>
+<body>
+  <h1>Chatbot</h1>
+  <input type="text" id="question" placeholder="Digite sua pergunta" />
+  <button onclick="askQuestion()">Enviar</button>
+  <p id="response"></p>
+
+  <script>
+    async function askQuestion() {
+      const question = document.getElementById("question").value;
+      const responseField = document.getElementById("response");
+
+      try {
+        const res = await fetch("https://sua-url-do-render.com/chatbot", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: question })
+        });
+
+        const data = await res.json();
+        responseField.textContent = data.reply;
+      } catch (error) {
+        responseField.textContent = "Erro ao se conectar ao chatbot.";
+      }
+    }
+  </script>
+</body>
+</html>
