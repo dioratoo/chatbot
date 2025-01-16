@@ -42,8 +42,10 @@ app.post("/chatbot", (req, res) => {
       }
 
       if (row) {
+        console.log("Resposta encontrada:", row.answer);
         res.json({ reply: row.answer });
       } else {
+        console.log("Nenhuma resposta encontrada para:", userQuestion);
         res.json({ reply: "Desculpe, não entendi sua pergunta. Tente algo diferente." });
       }
     }
