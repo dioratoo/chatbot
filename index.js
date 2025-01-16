@@ -2,9 +2,9 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-app.use(express.json()); // Para processar JSON no body
+app.use(express.json()); // Processar JSON no corpo da requisição
 
-// Base de perguntas e respostas
+// Banco de perguntas e respostas
 const faq = {
   "oi": "Olá! Como posso ajudar?",
   "qual é o seu nome?": "Eu sou um chatbot criado para te ajudar!",
@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 // Rota POST para o chatbot
 app.post("/chatbot", (req, res) => {
-  const { message } = req.body; // Extrai a mensagem do body da requisição
+  const { message } = req.body; // Extrai a mensagem do corpo da requisição
   if (!message) {
     return res.status(400).json({ error: "Por favor, envie uma mensagem." });
   }
