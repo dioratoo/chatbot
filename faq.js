@@ -1,6 +1,11 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("./faq.db", sqlite3.OPEN_READWRITE, (err) => {
+const base64Db = process.env.FAQ_DB_BASE64; // Certifique-se de configurar isso no painel
+const dbBuffer = Buffer.from(base64Db, "base64");
+fs.writeFileSync("faq.db", dbBuffer);
+
+const dbPath = path.join(__dirname, "faq.db");
+const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     console.error("Erro ao conectar ao banco de dados:", err.message);
   } else {
