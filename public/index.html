@@ -77,7 +77,7 @@
     <div class="header">Chatbot Protheus</div>
     <div class="messages" id="messages"></div>
     <div class="footer">
-      <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+      <input type="text" id="messageInput" placeholder="Digite sua mensagem..." onkeypress="handleKeyPress(event)">
       <button onclick="sendMessage()">Enviar</button>
     </div>
   </div>
@@ -112,6 +112,12 @@
         addMessage(data.reply, "bot");
       } catch (error) {
         addMessage("Erro ao se comunicar com o servidor.", "bot");
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === "Enter") {
+        sendMessage();
       }
     }
   </script>

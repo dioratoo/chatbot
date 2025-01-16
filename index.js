@@ -9,7 +9,10 @@ const faq = {
   "oi": "Olá! Como posso ajudar?",
   "qual é o seu nome?": "Eu sou um chatbot criado para te ajudar!",
   "como faço para criar um chatbot?": "Você pode usar Node.js, Express e um serviço como Render para começar.",
-  "adeus": "Até mais! Volte sempre."
+  // Adicione mais perguntas e respostas aqui:
+  "qual é o seu propósito?": "Meu propósito é ajudar com dúvidas relacionadas ao GLPI e Protheus.",
+  "como funciona o sistema protheus?": "O sistema Protheus é uma solução ERP que auxilia na gestão de empresas.",
+  "adeus": "Até mais! Volte sempre.",
 };
 
 // Servir arquivos estáticos da pasta "public"
@@ -28,7 +31,7 @@ app.post("/chatbot", (req, res) => {
   }
 
   // Responder dinamicamente
-  const response = faq[message.toLowerCase()] || "Desculpe, não entendi sua pergunta.";
+  const response = faq[message.toLowerCase()] || "Desculpe, não entendi sua pergunta. Tente algo diferente.";
   res.json({ reply: response });
 });
 
