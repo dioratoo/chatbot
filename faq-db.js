@@ -16,8 +16,8 @@ db.serialize(() => {
 
   // Inserir perguntas e respostas iniciais
   const stmt = db.prepare("INSERT INTO faq (question, answer) VALUES (?, ?)");
-  stmt.run("oi", "Olá! Como posso ajudar?");
-  stmt.run("qual é o seu nome?", "Eu sou um chatbot criado para te ajudar!");
+  stmt.run("hola", "¡Hola! ¿Cómo puedo ayudarte?");
+  stmt.run("¿cómo funciona el sistema Protheus?", "El sistema Protheus es una solución ERP para la gestión empresarial.");
   stmt.run("como funciona o sistema Protheus?", "O sistema Protheus é uma solução ERP para gestão empresarial.");
   stmt.run("qual é o seu propósito?", "Meu propósito é ajudar com dúvidas relacionadas ao GLPI e Protheus.");
   stmt.run("adeus", "Até mais! Volte sempre.");
