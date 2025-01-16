@@ -1,54 +1,53 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
-const translate = require("google-translate-api");
+const path = require("path");
 
-const app = express();
-app.use(express.json());
+const app = express(); // Certifique-se de que o Express está sendo inicializado
+app.use(express.json()); // Processar JSON no corpo da requisição
 
-// Conectar ao banco de dados
-const db = new sqlite3.Database("faq.db");
+// Conectar ao banco de dados SQLite
+const db = new sqlite3.Database("./faq.db", sqlite3.OPEN_READWRITE, (err) => {
+  if (err) {
+    console.error("Erro ao conectar ao banco de dados:", err.message);
+  } else {
+    console.log("Conectado ao banco de dados SQLite.");
+  }
+});
+
+// Servir arquivos estáticos da pasta "public"
+app.use(express.static(path.join(__dirname, "public")));
+
+// Rota principal para exibir o HTML
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 // Rota POST para o chatbot
-app.post("/chatbot", async (req, res) => {
+app.post("/chatbot", (req, res) => {
   const { message } = req.body;
-
   if (!message) {
     return res.status(400).json({ error: "Por favor, envie uma mensagem." });
   }
 
-  try {
-    // Detectar o idioma da mensagem
-    const detection = await translate(message, { to: "en" });
-    const detectedLanguage = detection.from.language.iso;
+  const userQuestion = message.toLowerCase();
+  console.log("Pergunta recebida:", userQuestion);
 
-    // Traduzir a mensagem para português (idioma padrão do banco)
-    const translatedMessage = detection.text;
-
-    // Consultar a resposta no banco de dados
-    db.get(
-      "SELECT answer FROM faq WHERE question = ?",
-      [translatedMessage.toLowerCase()],
-      async (err, row) => {
-        if (err) {
-          console.error("Erro ao acessar o banco de dados:", err);
-          return res.status(500).json({ reply: "Erro interno no servidor." });
-        }
-
-        if (row) {
-          // Traduzir a resposta de volta para o idioma do usuário
-          const translatedAnswer = await translate(row.answer, { to: detectedLanguage });
-          res.json({ reply: row.answer });
-        } else {
-          res.json({ reply: "Lo siento, no entendí tu pregunta." });
-        }
+  db.get(
+    "SELECT answer FROM faq WHERE question = ? COLLATE NOCASE",
+    [userQuestion],
+    (err, row) => {
+      if (err) {
+        console.error("Erro ao acessar o banco de dados:", err.message);
+        return res.status(500).json({ reply: "Erro interno do servidor." });
       }
-    );
-    console.log("Pergunta recebida:", message.toLowerCase());
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao processar a tradução." });
-  }
+      if (row) {
+        res.json({ reply: row.answer });
+      } else {
+        res.json({ reply: "Desculpe, não entendi sua pergunta. Tente algo diferente." });
+      }
+    }
+  );
 });
 
 // Inicializa o servidor na porta 5000
