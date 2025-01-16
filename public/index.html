@@ -61,6 +61,32 @@
     button:hover {
       background-color: #0056b3;
     }
+
+    /* Responsividade para dispositivos móveis */
+    @media (max-width: 600px) {
+      .chat-container {
+        margin: 20px;
+        padding: 15px;
+      }
+      #chat-box {
+        height: 250px;
+      }
+      button {
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      #chat-form {
+        flex-direction: column;
+      }
+      #user-input {
+        margin-bottom: 10px;
+      }
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
