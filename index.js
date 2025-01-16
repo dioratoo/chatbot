@@ -26,15 +26,13 @@ app.get("/", (req, res) => {
 
 // Rota POST para o chatbot
 app.post("/chatbot", (req, res) => {
-  const { message } = req.body; // Extrai a mensagem do corpo da requisição
-  if (!message) {
-    return res.status(400).json({ error: "Por favor, envie uma mensagem." });
-  }
-
-  // Procurar resposta no JSON
+  const { message } = req.body;
+  console.log("Mensagem recebida:", message); // Log da mensagem recebida
   const response = faq[message.toLowerCase()] || "Lo siento, no entendí tu pregunta. Intenta algo diferente.";
+  console.log("Resposta enviada:", response); // Log da resposta enviada
   res.json({ reply: response });
 });
+
 
 // Inicializa o servidor na porta 5000
 const PORT = process.env.PORT || 5000;
