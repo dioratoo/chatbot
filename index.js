@@ -1,30 +1,20 @@
-const express = require('express'); // Importa o framework Express
-const app = express(); // Inicializa o aplicativo Express
-const PORT = 3000; // Define a porta onde o servidor irá rodar
+const express = require('express');
+const app = express();
+const PORT = 3000;
 
-// Middleware para interpretar JSON no corpo das requisições
+// Middleware para interpretar o corpo das requisições como JSON
 app.use(express.json());
 
-// Middleware para servir arquivos estáticos (opcional)
-app.use(express.static('public'));
-
-// Endpoint GET
-app.get('/api/data', (req, res) => {
-  res.json({ message: 'Esta é uma resposta JSON para o GET' });
-});
-
-// Endpoint POST
 app.post('/api/data', (req, res) => {
-  const data = req.body; // Obtém os dados enviados no corpo da requisição
-  res.json({ message: 'Recebi seus dados!', data });
+  try {
+    const data = req.body; // Acessa os dados no corpo da requisição
+    res.json({ message: 'Recebi seus dados!', data });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Erro ao processar o JSON' });
+  }
 });
 
-// Tratamento de rota não encontrada
-app.use((req, res, next) => {
-  res.status(404).send('Rota não encontrada!');
-});
-
-// Inicializa o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
