@@ -1,76 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot Protheus</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    .chat-container {
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    #chat-box {
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 10px;
-      background-color: #f9f9f9;
-    }
-    .message {
-      margin-bottom: 10px;
-    }
-    .user {
-      text-align: right;
-      color: #007bff;
-    }
-    .chatbot {
-      text-align: left;
-      color: #28a745;
-    }
-    #chat-form {
-      display: flex;
-      margin-top: 10px;
-    }
-    #user-input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  <title>Chatbot GLPI/Protheus</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="chat-container">
-    <h1>Chatbot Protheus</h1>
-    <div id="chat-box"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Escribe tu pregunta..." />
-      <button type="submit">Enviar</button>
-    </form>
+  <div class="container">
+    <h1>Chatbot GLPI/Protheus</h1>
+    <div id="chat">
+      <div id="messages"></div>
+      <input id="user-input" type="text" placeholder="Digite sua pergunta aqui..." />
+      <button id="send-btn">Enviar</button>
+    </div>
+    <div id="admin">
+      <h2>Adicionar Pergunta e Resposta</h2>
+      <input id="new-question" type="text" placeholder="Nova Pergunta" />
+      <input id="new-answer" type="text" placeholder="Nova Resposta" />
+      <button id="add-btn">Adicionar</button>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
