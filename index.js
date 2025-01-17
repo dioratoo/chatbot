@@ -1,39 +1,30 @@
-const express = require("express");
-const path = require("path");
+const express = require('express'); // Importa o framework Express
+const app = express(); // Inicializa o aplicativo Express
+const PORT = 3000; // Define a porta onde o servidor irá rodar
 
-const app = express();
-app.use(express.json()); // Processar JSON no corpo da requisição
+// Middleware para interpretar JSON no corpo das requisições
+app.use(express.json());
 
-// Banco de perguntas e respostas diretamente no código
-const faq = {
-  "hola": "¡Hola! ¿En qué puedo ayudarte?",
-  "¿cómo estás?": "¡Estoy bien, gracias por preguntar! ¿Y tú?",
-  "¿qué es protheus?": "Protheus es un sistema ERP desarrollado por TOTVS para gestionar empresas.",
-  "adiós": "¡Hasta luego! ¡Vuelve pronto!"
-};
+// Middleware para servir arquivos estáticos (opcional)
+app.use(express.static('public'));
 
-// Servir arquivos estáticos da pasta "public"
-app.use(express.static(path.join(__dirname, "public")));
-
-// Rota principal para exibir o HTML
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+// Endpoint GET
+app.get('/api/data', (req, res) => {
+  res.json({ message: 'Esta é uma resposta JSON para o GET' });
 });
 
-// Rota POST para o chatbot
-app.post("/chatbot", (req, res) => {
-  const { message } = req.body; // Extrai a mensagem do corpo da requisição
-  if (!message) {
-    return res.status(400).json({ error: "Por favor, envíe un mensaje." });
-  }
-
-  // Responder dinamicamente
-  const response = faq[message.toLowerCase()] || "Lo siento, no entendí tu pregunta. Intenta algo diferente.";
-  res.json({ reply: response });
+// Endpoint POST
+app.post('/api/data', (req, res) => {
+  const data = req.body; // Obtém os dados enviados no corpo da requisição
+  res.json({ message: 'Recebi seus dados!', data });
 });
 
-// Inicializa o servidor na porta 5000
-const PORT = process.env.PORT || 5000;
+// Tratamento de rota não encontrada
+app.use((req, res, next) => {
+  res.status(404).send('Rota não encontrada!');
+});
+
+// Inicializa o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
