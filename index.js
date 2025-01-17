@@ -1,20 +1,22 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware para interpretar o corpo das requisições como JSON
+// Middleware para ler dados no formato JSON
 app.use(express.json());
 
-app.post('/api/data', (req, res) => {
-  try {
-    const data = req.body; // Acessa os dados no corpo da requisição
-    res.json({ message: 'Recebi seus dados!', data });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: 'Erro ao processar o JSON' });
-  }
+// Rota GET
+app.get('/api/data', (req, res) => {
+  res.json({ message: "Dados retornados com sucesso!" });
 });
 
+// Rota POST
+app.post('/api/data', (req, res) => {
+  const data = req.body;
+  res.json({ message: "Recebido com sucesso", data });
+});
+
+// Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
