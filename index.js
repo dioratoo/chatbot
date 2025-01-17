@@ -5,6 +5,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware para ler dados no formato JSON
 app.use(express.json());
 
+// Rota para a raiz do servidor
+app.get('/', (req, res) => {
+  res.send('Servidor rodando corretamente!');
+})
+
 // Rota GET
 app.get('/api/data', (req, res) => {
   res.json({ message: "Dados retornados com sucesso!" });
