@@ -3,24 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot GLPI/Protheus</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Chatbot Protheus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+    .chat-container {
+      max-width: 800px;
+      margin: 50px auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      border: 1px solid #d1d1d1;
+    }
+    .header {
+      background-color: #0072c6;
+      color: #ffffff;
+      text-align: center;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .messages {
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 15px;
+    }
+    .message.user {
+      text-align: right;
+      color: #0072c6;
+    }
+    .message.bot {
+      text-align: left;
+      color: #5a5a5a;
+    }
+    .footer {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #d1d1d1;
+    }
+    .footer input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #d1d1d1;
+      border-radius: 5px;
+    }
+    .footer button {
+      margin-left: 10px;
+      background-color: #0072c6;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .footer button:hover {
+      background-color: #005a99;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Chatbot GLPI/Protheus</h1>
-    <div id="chat">
-      <div id="messages"></div>
-      <input id="user-input" type="text" placeholder="Digite sua pergunta aqui..." />
-      <button id="send-btn">Enviar</button>
-    </div>
-    <div id="admin">
-      <h2>Adicionar Pergunta e Resposta</h2>
-      <input id="new-question" type="text" placeholder="Nova Pergunta" />
-      <input id="new-answer" type="text" placeholder="Nova Resposta" />
-      <button id="add-btn">Adicionar</button>
+  <div class="chat-container">
+    <div class="header">Chatbot Protheus</div>
+    <div class="messages" id="messages"></div>
+    <div class="footer">
+      <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+      <button onclick="sendMessage()">Enviar</button>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <script>
+    const messagesDiv = document.getElementById("messages");
+
+    function addMessage(content, sender) {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${sender}`;
+      messageDiv.textContent = content;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const userMessage = input.value;
+      if (!userMessage.trim()) return;
+
+      addMessage(userMessage, "user");
+      input.value = "";
+
+      try {
+        const response = await fetch("/chatbot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage })
+        });
+
+        const data = await response.json();
+        addMessage(data.reply, "bot");
+      } catch (error) {
+        addMessage("Erro ao se comunicar com o servidor.", "bot");
+      }
+    }
+  </script>
 </body>
 </html>
