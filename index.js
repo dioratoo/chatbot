@@ -1,67 +1,79 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const Database = require('better-sqlite3');
+
+// Criando uma instância do servidor Express
 const app = express();
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'chatbot.db'
-});
-const Chat = require('./models/chat'); // Importa o modelo de Chat
 
-// Middleware para interpretar o corpo das requisições como JSON
-app.use(express.json());
+// Configurando o body-parser para lidar com JSON
+app.use(bodyParser.json());
 
-// Sincroniza o banco de dados
-sequelize.sync()
-  .then(() => console.log('Banco de dados sincronizado com sucesso!'))
-  .catch(err => console.log('Erro ao sincronizar o banco de dados:', err));
+// Criando a conexão com o banco de dados SQLite
+const db = new Database('my-database.db');
 
-// Rota para a raiz
-app.get('/', (req, res) => {
-  res.send('Servidor rodando corretamente!');
-});
+// Criando a tabela de respostas do chatbot se ela não existir
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS responses (
+    question TEXT PRIMARY KEY,
+    answer TEXT
+  )
+`).run();
 
-// Rota para obter as perguntas e respostas
-app.get('/api/chat', async (req, res) => {
-  try {
-    const chats = await Chat.findAll(); // Busca todas as perguntas e respostas
-    res.json(chats);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar chats' });
+// Função para obter a resposta do chatbot no banco de dados
+function getChatbotResponse(question) {
+  const stmt = db.prepare('SELECT answer FROM responses WHERE question = ?');
+  const row = stmt.get(question);
+
+  if (row) {
+    return row.answer;
+  } else {
+    return 'Desculpe, não entendi a sua pergunta.';
   }
-});
+}
 
-// Rota para adicionar uma nova pergunta e resposta
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { question, answer } = req.body;
-    const newChat = await Chat.create({ question, answer });
-    res.status(201).json(newChat);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao adicionar nova pergunta/resposta' });
-  }
-});
+// Função para adicionar uma pergunta e resposta no banco de dados
+function addQuestionAndAnswer(question, answer) {
+  const stmt = db.prepare('INSERT OR REPLACE INTO responses (question, answer) VALUES (?, ?)');
+  stmt.run(question, answer);
+}
 
-// Rota para responder a perguntas
-app.post('/api/respond', async (req, res) => {
+// Definindo uma rota para enviar perguntas para o chatbot (requisição POST)
+app.post('/chat', (req, res) => {
   const { question } = req.body;
 
-  try {
-    const chat = await Chat.findOne({
-      where: { question }
-    });
-
-    if (!chat) {
-      return res.status(404).json({ message: 'Pergunta não encontrada no banco de dados' });
-    }
-
-    res.json({ answer: chat.answer });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar resposta' });
+  // Verificando se a pergunta foi enviada no corpo da requisição
+  if (!question) {
+    return res.status(400).json({ error: 'A pergunta é obrigatória' });
   }
+
+  const answer = getChatbotResponse(question);
+
+  // Respondendo com a resposta do chatbot
+  res.json({ question, answer });
 });
 
-// Iniciar o servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+// Definindo uma rota para adicionar perguntas e respostas (requisição POST)
+app.post('/add-question', (req, res) => {
+  const { question, answer } = req.body;
+
+  // Verificando se a pergunta e a resposta foram enviadas
+  if (!question || !answer) {
+    return res.status(400).json({ error: 'A pergunta e a resposta são obrigatórias' });
+  }
+
+  // Adicionando a pergunta e resposta ao banco de dados
+  addQuestionAndAnswer(question, answer);
+
+  // Respondendo que a pergunta foi adicionada com sucesso
+  res.json({ message: 'Pergunta e resposta adicionadas com sucesso!' });
+});
+
+// Inicializando o servidor na porta 3000
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
+});
+
+// Fechando a conexão com o banco de dados quando o processo for finalizado
+process.on('exit', () => {
+  db.close();
 });
